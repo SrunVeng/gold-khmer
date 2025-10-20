@@ -7,7 +7,7 @@
   "currency": "货币",
   "usd": "美元 (USD)",
   "khr": "瑞尔 (KHR)",
-  "nbc_rate": "柬埔寨央行(NBC)官方汇率",
+  "nbc_rate": "柬埔寨央行 (NBC) 官方汇率",
   "one_usd_equals": "1 USD = {{rate}} KHR",
   "last_updated_pp": "最后更新（金边）",
   "ny_time": "纽约时间",
@@ -19,5 +19,7 @@
   "domleng_grams": "一两重量（克）",
   "auto": "自动",
   "manual": "手动",
-  "gold_change": "涨跌"
+  "gold_change": "涨跌",
+  "footer_line": "© {{year}} {{app}} • 仅供信息参考",
+  "footer_disclaimer": "显示价格为估算值，交易前请自行核实。"
 }

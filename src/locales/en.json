@@ -19,5 +19,7 @@
   "domleng_grams": "Dom Leng weight (grams)",
   "auto": "Auto",
   "manual": "Manual",
-  "gold_change": "Change"
+  "gold_change": "Change",
+  "footer_line": "© {{year}} {{app}} • For informational purposes only",
+  "footer_disclaimer": "Prices shown are computed estimates; verify before trading."
 }
