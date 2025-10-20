@@ -4,8 +4,8 @@ import { formatCurrency, formatNumber } from "../utils/format";
 
 export default function GoldPriceCard({ computed, currencyLabel, gold, locale }) {
     const { t } = useTranslation();
-    const goldDelta = gold?.chg ?? 0;
-    const goldPc = gold?.pc ?? 0;
+    const goldDelta = gold?.chg ?? 0;   // absolute change in USD (from your feed)
+    const goldPc = gold?.pc ?? 0;       // % change
     const up = goldDelta >= 0;
 
     // Fallbacks if caller doesn’t supply these explicitly
@@ -26,6 +26,9 @@ export default function GoldPriceCard({ computed, currencyLabel, gold, locale })
                         </div>
                         <div className={`text-sm ${up ? "text-emerald-600" : "text-rose-600"}`}>
                             {up ? "▲" : "▼"} {formatNumber(Math.abs(goldPc), { locale, digits: 2 })}%{" "}
+                            {/* NEW: absolute change in USD */}
+                            ({up ? "+" : "-"}
+                            {formatCurrency(Math.abs(goldDelta), { currency: "USD", locale })}){" "}
                             <span className="text-gray-400">({t("gold_change", "change")})</span>
                         </div>
                     </div>
@@ -37,24 +40,24 @@ export default function GoldPriceCard({ computed, currencyLabel, gold, locale })
 
             <div className="mt-4 flex flex-col gap-2 text-sm text-gray-700">
                 <div>
-                    <span className="text-gray-500">{t("per_chi", "per chi")}:</span>
+                    <span className="text-gray-500">{t("per_chi", "per chi")}:</span>{" "}
                     <span className="font-medium">
-      {formatCurrency(perChi, { currency: currencyLabel, locale })}
-    </span>
+                        {formatCurrency(perChi, { currency: currencyLabel, locale })}
+                    </span>
                 </div>
 
                 <div>
-                    <span className="text-gray-500">{t("per_hun", "per hun")}:</span>
+                    <span className="text-gray-500">{t("per_hun", "per hun")}:</span>{" "}
                     <span className="font-medium">
-      {formatCurrency(perHun, { currency: currencyLabel, locale })}
-    </span>
+                        {formatCurrency(perHun, { currency: currencyLabel, locale })}
+                    </span>
                 </div>
 
                 <div>
-                    <span className="text-gray-500">{t("per_li", "per li")}:</span>
+                    <span className="text-gray-500">{t("per_li", "per li")}:</span>{" "}
                     <span className="font-medium">
-      {formatCurrency(perLi, { currency: currencyLabel, locale })}
-    </span>
+                        {formatCurrency(perLi, { currency: currencyLabel, locale })}
+                    </span>
                 </div>
             </div>
         </div>
