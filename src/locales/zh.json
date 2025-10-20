@@ -2,6 +2,8 @@
   "gold": "黄金",
   "per_domleng": "每两（柬制）",
   "per_chi": "每钱（1/10 两）",
+  "per_hun": "每分（1/100 两）",
+  "per_li": "每厘（1/1000 两）",
   "currency": "货币",
   "usd": "美元 (USD)",
   "khr": "瑞尔 (KHR)",
