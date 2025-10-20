@@ -1,0 +1,21 @@
+{
+  "gold": "Gold",
+  "per_domleng": "per Dom Leng",
+  "per_chi": "per Chi",
+  "currency": "Currency",
+  "usd": "US Dollar (USD)",
+  "khr": "Cambodian Riel (KHR)",
+  "nbc_rate": "NBC Official Exchange Rate",
+  "one_usd_equals": "1 USD = {{rate}} KHR",
+  "last_updated_pp": "Last updated (Phnom Penh)",
+  "ny_time": "New York time",
+  "language": "Language",
+  "khmer": "Khmer",
+  "english": "English",
+  "chinese": "Chinese (Simplified)",
+  "settings": "Settings",
+  "domleng_grams": "Dom Leng weight (grams)",
+  "auto": "Auto",
+  "manual": "Manual",
+  "gold_change": "Change"
+}

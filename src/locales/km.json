@@ -1,0 +1,21 @@
+{
+  "gold": "មាស",
+  "per_domleng": "ក្នុងមួយតម្លឹង",
+  "per_chi": "ក្នុងមួយតម្លឹង",
+  "currency": "រូបិយប័ណ្ណ",
+  "usd": "ដុល្លារ (USD)",
+  "khr": "រៀល (KHR)",
+  "nbc_rate": "អត្រាផ្លូវការរបស់ធនាគារជាតិ (NBC)",
+  "one_usd_equals": "1 USD = {{rate}} KHR",
+  "last_updated_pp": "បានអាប់ដេតចុងក្រោយ (ភ្នំពេញ)",
+  "ny_time": "ម៉ោងញូវយ៉ក",
+  "language": "ភាសា",
+  "khmer": "ខ្មែរ",
+  "english": "អង់គ្លេស",
+  "chinese": "ចិន",
+  "settings": "ការកំណត់",
+  "domleng_grams": "ទម្ងន់ ដំលង់ (ក្រាម)",
+  "auto": "ស្វ័យប្រវត្តិ",
+  "manual": "ដោយដៃ",
+  "gold_change": "ផ្លាស់ប្តូរ"
+}
