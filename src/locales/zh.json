@@ -21,5 +21,16 @@
   "manual": "手动",
   "gold_change": "涨跌",
   "footer_line": "© {{year}} {{app}} • 仅供信息参考",
-  "footer_disclaimer": "显示价格为估算值，交易前请自行核实。"
+  "footer_disclaimer": "显示价格为估算值，交易前请自行核实。",
+  "enter_usd": "输入金额（USD）",
+  "clear": "清除",
+  "usd_calc_needs_fx": "要从 USD 精确计算，请提供 computed.fxUsdToCurrency（例如 USD→KHR）。",
+  "domleng": "两（柬制）",
+  "chi": "钱",
+  "hun": "分",
+  "li": "厘",
+  "calc_note_precise": "数量基于美元单价（由当前显示币种换算）。",
+  "used": "已用",
+  "change": "找零",
+  "error_price_missing": "每两价格不可用。"
 }

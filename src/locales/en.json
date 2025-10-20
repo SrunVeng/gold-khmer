@@ -21,5 +21,16 @@
   "manual": "Manual",
   "gold_change": "Change",
   "footer_line": "© {{year}} {{app}} • For informational purposes only",
-  "footer_disclaimer": "Prices shown are computed estimates; verify before trading."
+  "footer_disclaimer": "Prices shown are computed estimates; verify before trading.",
+  "enter_usd": "Enter amount (USD)",
+  "clear": "Clear",
+  "usd_calc_needs_fx": "To calculate accurately from USD, provide computed.fxUsdToCurrency (e.g., USD→KHR).",
+  "domleng": "Dom Leng",
+  "chi": "Chi",
+  "hun": "Hun",
+  "li": "Li",
+  "calc_note_precise": "Quantities use USD unit prices (converted from the current display currency).",
+  "used": "Used",
+  "change": "Change",
+  "error_price_missing": "Price per domleng unavailable."
 }
