@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const GOLD_URL = "/api/gold";
+const GOLD_URL = "https://data-asg.goldprice.org/dbXRates/USD";
 
 async function getJson(url, opts) {
     const res = await fetch(url, opts);
