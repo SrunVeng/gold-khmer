@@ -13,11 +13,65 @@ import {
 import { useTranslation } from "react-i18next";
 import { formatCurrency, formatNumber } from "../utils/format";
 
-// ⬇️ new imports
+// New: toasts + confirm (same as your imports)
 import { useToast } from "./Toast.jsx";
 import { useConfirm } from "./ConfirmGuard.jsx";
 
-const STORAGE_KEY = "goldTradeCard:v6";
+/** ----------------------------------------------------------------
+ * Persistence helpers (localStorage with versioning & optional TTL)
+ * ---------------------------------------------------------------- */
+const STORAGE_KEY = "goldTradeCard:v7"; // bump key to migrate from sessionStorage
+const STORAGE_VERSION = 1;
+// Set to 0 to never expire. Or e.g. 1000 * 60 * 60 * 24 * 180 for ~180 days.
+const PERSIST_TTL_MS = 0;
+
+function storageAvailable() {
+    try {
+        const k = "__probe__";
+        window.localStorage.setItem(k, "1");
+        window.localStorage.removeItem(k);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function loadPersisted() {
+    if (!storageAvailable()) return null;
+    try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const j = JSON.parse(raw);
+        if (!j || typeof j !== "object") return null;
+        if (j.exp && j.exp > 0 && Date.now() > j.exp) {
+            window.localStorage.removeItem(STORAGE_KEY);
+            return null;
+        }
+        // optional migrations by version
+        if (j.v !== STORAGE_VERSION) {
+            // place migration logic here if needed later
+        }
+        return j.data ?? null;
+    } catch {
+        return null;
+    }
+}
+
+function savePersisted(data) {
+    if (!storageAvailable()) return;
+    try {
+        const exp = PERSIST_TTL_MS > 0 ? Date.now() + PERSIST_TTL_MS : 0;
+        const payload = { v: STORAGE_VERSION, savedAt: Date.now(), exp, data };
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch {}
+}
+
+function clearPersisted() {
+    if (!storageAvailable()) return;
+    try {
+        window.localStorage.removeItem(STORAGE_KEY);
+    } catch {}
+}
 
 function cls(...xs) {
     return xs.filter(Boolean).join(" ");
@@ -27,7 +81,10 @@ function cls(...xs) {
 function useSpringNumber(target, { stiffness = 160, damping = 22, mass = 0.25 } = {}) {
     const prefersReduce = useReducedMotion();
     const mv = useMotionValue(typeof target === "number" ? target : 0);
-    const spring = useSpring(mv, prefersReduce ? { stiffness: 1000, damping: 1000 } : { stiffness, damping, mass });
+    const spring = useSpring(
+        mv,
+        prefersReduce ? { stiffness: 1000, damping: 1000 } : { stiffness, damping, mass }
+    );
     const [v, setV] = useState(typeof target === "number" ? target : 0);
 
     useEffect(() => {
@@ -104,8 +161,8 @@ export default function GoldTradeCard({
                                           onSell,
                                       }) {
     const { t } = useTranslation();
-    const toast = useToast();       // ⬅️ toasts
-    const confirm = useConfirm();   // ⬅️ confirm dialog
+    const toast = useToast();
+    const confirm = useConfirm();
 
     // ---------- Spot / movement ----------
     const perDomleng =
@@ -118,34 +175,58 @@ export default function GoldTradeCard({
     const perLi = computed?.perLi ?? (perDomleng ? perDomleng / 1000 : undefined);
 
     const goldDelta = Number.isFinite(gold?.chg) ? gold?.chg : null; // USD
-    const goldPcRaw = Number.isFinite(gold?.pc) ? gold?.pc : null;   // %
+    const goldPcRaw = Number.isFinite(gold?.pc) ? gold?.pc : null; // %
     const up = (goldDelta ?? 0) >= 0;
 
-    // ---------- Local state (persist) ----------
+    // ---------- Local state (persist across days) ----------
     const [amountInput, setAmountInput] = useState("");
     const [position, setPosition] = useState(null);
 
-    // Load once
+    // Load once (from localStorage)
     const loadedRef = useRef(false);
     useEffect(() => {
         if (loadedRef.current) return;
         loadedRef.current = true;
+
+        // First, migrate anything that might still be in sessionStorage (older versions)
         try {
-            const raw = sessionStorage.getItem(STORAGE_KEY);
-            if (raw) {
-                const j = JSON.parse(raw);
-                if (typeof j.amountInput === "string") setAmountInput(j.amountInput);
-                if (j.position && typeof j.position === "object") setPosition(j.position);
+            const legacy = sessionStorage.getItem("goldTradeCard:v6");
+            if (legacy) {
+                const j = JSON.parse(legacy);
+                savePersisted({
+                    amountInput: typeof j?.amountInput === "string" ? j.amountInput : "",
+                    position: j?.position && typeof j.position === "object" ? j.position : null,
+                });
+                sessionStorage.removeItem("goldTradeCard:v6");
             }
         } catch {}
+
+        const data = loadPersisted();
+        if (data) {
+            if (typeof data.amountInput === "string") setAmountInput(data.amountInput);
+            if (data.position && typeof data.position === "object") setPosition(data.position);
+        }
     }, []);
 
-    // Persist
+    // Persist changes
     useEffect(() => {
-        try {
-            sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ amountInput, position }));
-        } catch {}
+        savePersisted({ amountInput, position });
     }, [amountInput, position]);
+
+    // Cross-tab sync
+    useEffect(() => {
+        function onStorage(e) {
+            if (e.storageArea !== window.localStorage || e.key !== STORAGE_KEY) return;
+            const data = loadPersisted();
+            if (!data) return;
+            if (typeof data.amountInput === "string") setAmountInput(data.amountInput);
+            if (data.position && typeof data.position === "object") setPosition(data.position);
+            if (!data.position && position) setPosition(null);
+        }
+        window.addEventListener("storage", onStorage);
+        return () => window.removeEventListener("storage", onStorage);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [position]);
 
     // ---------- Input focus: keep sticky while typing ----------
     const inputRef = useRef(null);
@@ -206,19 +287,19 @@ export default function GoldTradeCard({
         return { px, proceeds, net, retPc };
     }, [position, perDomleng]);
 
-    // ---------- Actions (now with toast + confirm) ----------
+    // ---------- Actions (with toast + confirm) ----------
     const handleBuy = () => {
         if (!perDomleng) {
             toast.error({
                 title: t("error_price_missing", "Price per domleng unavailable."),
-                description: t("try_again_later", "Please try again later.")
+                description: t("try_again_later", "Please try again later."),
             });
             return;
         }
         if (!preview || usdValue <= 0) {
             toast.info({
                 title: t("enter_valid_amount", "Enter a valid amount"),
-                description: t("amount_must_be_positive", "Amount must be a positive number.")
+                description: t("amount_must_be_positive", "Amount must be a positive number."),
             });
             return;
         }
@@ -234,7 +315,10 @@ export default function GoldTradeCard({
 
         toast.success({
             title: t("buy_placed", "Buy placed"),
-            description: t("you_bought_domleng_worth", "You bought gold worth") + " " + formatCurrency(preview.costUSD, { currency: "USD", locale })
+            description:
+                t("you_bought_domleng_worth", "You bought gold worth") +
+                " " +
+                formatCurrency(preview.costUSD, { currency: "USD", locale }),
         });
     };
 
@@ -242,7 +326,7 @@ export default function GoldTradeCard({
         if (!position || !perDomleng || !projected) {
             toast.error({
                 title: t("cannot_sell", "Cannot sell"),
-                description: t("missing_position_or_price", "Missing position or live price.")
+                description: t("missing_position_or_price", "Missing position or live price."),
             });
             return;
         }
@@ -274,7 +358,7 @@ export default function GoldTradeCard({
             title: net >= 0 ? t("sold_with_profit", "Sold • Profit") : t("sold_with_loss", "Sold • Loss"),
             description:
                 `${t("proceeds", "Proceeds")}: ${formatCurrency(proceeds, { currency: "USD", locale })} • ` +
-                `${t("pnl", "P&L")}: ${formatCurrency(net, { currency: "USD", locale })}`
+                `${t("pnl", "P&L")}: ${formatCurrency(net, { currency: "USD", locale })}`,
         });
     };
 
@@ -290,13 +374,15 @@ export default function GoldTradeCard({
 
         setPosition(null);
         setAmountInput("");
+        clearPersisted();
+
         requestAnimationFrame(() => {
             if (inputRef.current) inputRef.current.focus({ preventScroll: true });
         });
 
         toast.info({
             title: t("reset_done", "Reset complete"),
-            description: t("you_can_enter_again", "You can enter a new amount now.")
+            description: t("you_can_enter_again", "You can enter a new amount now."),
         });
     };
 
@@ -508,7 +594,13 @@ export default function GoldTradeCard({
                         <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <Stat
                                 label={t("you_receive", "You receive (Domleng)")}
-                                value={<AnimatedNumber value={preview.qtyDomleng} digits={6} format={(v) => formatNumber(v, { locale, digits: 6 })} />}
+                                value={
+                                    <AnimatedNumber
+                                        value={preview.qtyDomleng}
+                                        digits={6}
+                                        format={(v) => formatNumber(v, { locale, digits: 6 })}
+                                    />
+                                }
                             />
                             <Stat
                                 label={t("amount", "Amount")}
@@ -518,13 +610,12 @@ export default function GoldTradeCard({
                                 label={t("fyi_units", "FYI Units (rounded)")}
                                 value=""
                                 sub={
-                                    `${t("domleng_short","Domleng")}: ${formatNumber(preview.fyi.domleng, { locale })} • ` +
-                                    `${t("chi","Chi")}: ${formatNumber(preview.fyi.chi, { locale })} • ` +
-                                    `${t("hun","Hun")}: ${formatNumber(preview.fyi.hun, { locale })} • ` +
-                                    `${t("li","Li")}: ${formatNumber(preview.fyi.li, { locale })}`
+                                    `${t("domleng_short", "Domleng")}: ${formatNumber(preview.fyi.domleng, { locale })} • ` +
+                                    `${t("chi", "Chi")}: ${formatNumber(preview.fyi.chi, { locale })} • ` +
+                                    `${t("hun", "Hun")}: ${formatNumber(preview.fyi.hun, { locale })} • ` +
+                                    `${t("li", "Li")}: ${formatNumber(preview.fyi.li, { locale })}`
                                 }
                             />
-
                         </div>
 
                         <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
@@ -559,7 +650,9 @@ export default function GoldTradeCard({
                         >
                             <LineChart className="size-3.5" />
                             {t("live_pl", "Live P&L")}:
-                            <span><AnimatedCurrency value={livePnL?.pnl ?? null} currency="USD" locale={locale} /></span>
+                            <span>
+                <AnimatedCurrency value={livePnL?.pnl ?? null} currency="USD" locale={locale} />
+              </span>
                             <span className="text-gray-400">
                 (
                                 {livePnL ? (
@@ -572,7 +665,9 @@ export default function GoldTradeCard({
                                         />
                                         %
                                     </>
-                                ) : "—"}
+                                ) : (
+                                    "—"
+                                )}
                                 )
               </span>
                         </div>
@@ -592,21 +687,34 @@ export default function GoldTradeCard({
                                 </>
                             }
                         />
-                        <Stat label={t("entry", "Entry")} value={<AnimatedCurrency value={position.entryPrice} currency="USD" locale={locale} />} />
-                        <Stat label={t("cost", "Cost")} value={<AnimatedCurrency value={position.costUSD} currency="USD" locale={locale} />} />
-                        <Stat label={t("spot", "Spot")} value={<AnimatedCurrency value={livePnL?.spot ?? null} currency="USD" locale={locale} />} />
+                        <Stat
+                            label={t("entry", "Entry")}
+                            value={<AnimatedCurrency value={position.entryPrice} currency="USD" locale={locale} />}
+                        />
+                        <Stat
+                            label={t("cost", "Cost")}
+                            value={<AnimatedCurrency value={position.costUSD} currency="USD" locale={locale} />}
+                        />
+                        <Stat
+                            label={t("spot", "Spot")}
+                            value={<AnimatedCurrency value={livePnL?.spot ?? null} currency="USD" locale={locale} />}
+                        />
                     </div>
 
                     {/* Sell at market (no custom price) */}
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                         <div className="rounded-2xl border border-gray-200 p-3 bg-white/70">
-                            <div className="text-xs text-gray-500">{t("sell_at_market", "Sell at market")}</div>
+                            <div className="text-xs text-gray-500">
+                                {t("sell_at_market", "Sell at market")}
+                            </div>
                             <div className="mt-1 text-sm text-gray-600">
                                 {t("market_price_current_spot", "Your sell will execute at the current spot price.")}
                             </div>
                             <div className="mt-2 text-xs text-gray-500">
                                 {t("projected_with", "Projected with")}{" "}
-                                <span className="font-medium"><AnimatedCurrency value={perDomleng} currency="USD" locale={locale} /></span>
+                                <span className="font-medium">
+                  <AnimatedCurrency value={perDomleng} currency="USD" locale={locale} />
+                </span>
                             </div>
                         </div>
 
@@ -615,7 +723,9 @@ export default function GoldTradeCard({
                             <div className="text-sm mt-1 space-y-1.5">
                                 <div className="flex items-center justify-between">
                                     <span>{t("proceeds", "Proceeds")}</span>
-                                    <span className="font-semibold"><AnimatedCurrency value={projected?.proceeds ?? null} currency="USD" locale={locale} /></span>
+                                    <span className="font-semibold">
+                    <AnimatedCurrency value={projected?.proceeds ?? null} currency="USD" locale={locale} />
+                  </span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span>{t("net_pnl", "Net P&L")}</span>
@@ -641,7 +751,9 @@ export default function GoldTradeCard({
                             />
                             %
                         </>
-                    ) : "—"}
+                    ) : (
+                        "—"
+                    )}
                   </span>
                                 </div>
                             </div>
@@ -649,12 +761,7 @@ export default function GoldTradeCard({
                     </div>
 
                     <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
-                        <ActionBtn
-                            icon={ShoppingCart}
-                            variant="danger"
-                            onClick={handleSell}
-                            disabled={!projected}
-                        >
+                        <ActionBtn icon={ShoppingCart} variant="danger" onClick={handleSell} disabled={!projected}>
                             {t("sell_now", "Sell Now")}
                         </ActionBtn>
                     </div>
