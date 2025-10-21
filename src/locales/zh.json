@@ -4,6 +4,7 @@
   "per_chi": "每钱（1/10 两）",
   "per_hun": "每分（1/100 两）",
   "per_li": "每厘（1/1000 两）",
+
   "currency": "货币",
   "usd": "美元 (USD)",
   "khr": "瑞尔 (KHR)",
@@ -22,15 +23,68 @@
   "gold_change": "涨跌",
   "footer_line": "© {{year}} {{app}} • 仅供信息参考",
   "footer_disclaimer": "显示价格为估算值，交易前请自行核实。",
+
   "enter_usd": "输入金额（USD）",
   "clear": "清除",
   "usd_calc_needs_fx": "要从 USD 精确计算，请提供 computed.fxUsdToCurrency（例如 USD→KHR）。",
+
   "domleng": "两（柬制）",
+  "domleng_short": "两（柬制）",
   "chi": "钱",
   "hun": "分",
   "li": "厘",
+
   "calc_note_precise": "数量基于美元单价（由当前显示币种换算）。",
   "used": "已用",
   "change": "找零",
-  "error_price_missing": "每两价格不可用。"
+  "error_price_missing": "每两价格不可用。",
+
+  "suggest_buy": "推荐：买入",
+  "suggest_sell": "推荐：卖出",
+
+  "locked_after_buy": "购买后已锁定",
+  "live_preview": "实时预览",
+  "locked": "已锁定",
+  "confirm_reset_trade": "重置交易并解锁金额？",
+
+  "you_receive": "获得数量（两）",
+  "amount": "金额",
+  "fyi_units": "单位参考（四舍五入）",
+
+  "buy_now": "立即买入",
+  "reset_trade": "重置交易",
+
+  "your_position": "持仓",
+  "live_pl": "实时盈亏",
+  "qty_domleng": "数量（两）",
+  "entry": "开仓价",
+  "cost": "成本",
+  "spot": "现价",
+
+  "sell_at_market": "市价卖出",
+  "market_price_current_spot": "按当前现价执行卖出。",
+  "projected_with": "按以下价格预估",
+  "projection": "预估",
+  "proceeds": "卖出所得",
+  "net_pnl": "净盈亏",
+  "return": "回报率",
+  "sell_now": "立即卖出",
+
+  "try_again_later": "请稍后再试。",
+  "enter_valid_amount": "请输入有效金额",
+  "amount_must_be_positive": "金额必须为正数。",
+  "buy_placed": "已提交买入",
+  "you_bought_domleng_worth": "你已买入等值黄金",
+  "cannot_sell": "无法卖出",
+  "missing_position_or_price": "缺少持仓或现价。",
+  "confirm_sell_title": "确认卖出持仓？",
+  "confirm_sell_desc": "这将按当前现价卖出你的全部持仓。",
+  "cancel": "取消",
+  "pnl": "盈亏",
+  "reset": "重置",
+  "confirm_reset_desc": "这将清除你的模拟持仓和输入。",
+  "reset_done": "重置完成",
+  "you_can_enter_again": "现在可以重新输入金额。",
+  "sold_with_profit": "已卖出 • 盈利",
+  "sold_with_loss": "已卖出 • 亏损"
 }

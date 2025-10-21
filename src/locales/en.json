@@ -4,6 +4,7 @@
   "per_chi": "per Chi",
   "per_hun": "per Hun",
   "per_li": "per Li",
+
   "currency": "Currency",
   "usd": "US Dollar (USD)",
   "khr": "Cambodian Riel (KHR)",
@@ -22,15 +23,68 @@
   "gold_change": "Change",
   "footer_line": "© {{year}} {{app}} • For informational purposes only",
   "footer_disclaimer": "Prices shown are computed estimates; verify before trading.",
+
   "enter_usd": "Enter amount (USD)",
   "clear": "Clear",
   "usd_calc_needs_fx": "To calculate accurately from USD, provide computed.fxUsdToCurrency (e.g., USD→KHR).",
+
   "domleng": "Dom Leng",
+  "domleng_short": "Domleng",
   "chi": "Chi",
   "hun": "Hun",
   "li": "Li",
+
   "calc_note_precise": "Quantities use USD unit prices (converted from the current display currency).",
   "used": "Used",
   "change": "Change",
-  "error_price_missing": "Price per domleng unavailable."
+  "error_price_missing": "Price per domleng unavailable.",
+
+  "suggest_buy": "Suggest: Buy",
+  "suggest_sell": "Suggest: Sell",
+
+  "locked_after_buy": "Locked after Buy",
+  "live_preview": "Live preview",
+  "locked": "Locked",
+  "confirm_reset_trade": "Reset trade and unlock amount?",
+
+  "you_receive": "You receive (Domleng)",
+  "amount": "Amount",
+  "fyi_units": "FYI Units (rounded)",
+
+  "buy_now": "Buy Now",
+  "reset_trade": "Reset Trade",
+
+  "your_position": "Your position",
+  "live_pl": "Live P&L",
+  "qty_domleng": "Qty (Domleng)",
+  "entry": "Entry",
+  "cost": "Cost",
+  "spot": "Spot",
+
+  "sell_at_market": "Sell at market",
+  "market_price_current_spot": "Your sell will execute at the current spot price.",
+  "projected_with": "Projected with",
+  "projection": "Projection",
+  "proceeds": "Proceeds",
+  "net_pnl": "Net P&L",
+  "return": "Return",
+  "sell_now": "Sell Now",
+
+  "try_again_later": "Please try again later.",
+  "enter_valid_amount": "Enter a valid amount",
+  "amount_must_be_positive": "Amount must be a positive number.",
+  "buy_placed": "Buy placed",
+  "you_bought_domleng_worth": "You bought gold worth",
+  "cannot_sell": "Cannot sell",
+  "missing_position_or_price": "Missing position or live price.",
+  "confirm_sell_title": "Sell position?",
+  "confirm_sell_desc": "This will sell your entire position at the current spot price.",
+  "cancel": "Cancel",
+  "pnl": "P&L",
+  "reset": "Reset",
+  "confirm_reset_desc": "This clears your simulated position and input.",
+  "reset_done": "Reset complete",
+  "you_can_enter_again": "You can enter a new amount now.",
+  "sold_with_profit": "Sold • Profit",
+  "sold_with_loss": "Sold • Loss"
 }

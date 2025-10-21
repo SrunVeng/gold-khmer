@@ -1,6 +1,6 @@
-import React from 'react'
-import Header from './pages/Header.jsx'
-import Footer from './pages/Footer.jsx'
+import React from "react";
+import Header from "./pages/Header.jsx";
+import Footer from "./pages/Footer.jsx";
 import Main from "./pages/Main.jsx";
 
 export default function App() {
@@ -10,5 +10,5 @@ export default function App() {
             <Main />
             <Footer />
         </div>
-    )
+    );
 }
